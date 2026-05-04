@@ -1,0 +1,30 @@
+FER2013 Phase 1 — Analytic Summary
+============================================================
+
+Full training set   : 28,709 images
+Batch size          : 210 images
+Sampling ratio      : 0.73%
+Usable images       : 210/210 (100.0%)
+Flagged images      : 0
+
+Class       Batch     Full   Sample%   AvgBright  AvgContrast
+------------------------------------------------------------
+angry          30    3,995     0.75%       126.2         52.4
+disgust        30      436     6.88%       136.4         59.4
+fear           30    4,097     0.73%       130.9         59.9
+happy          30    7,215     0.42%       129.5         49.6
+neutral        30    4,965     0.60%       124.9         57.5
+sad            30    4,830     0.62%       124.9         51.4
+surprise       30    3,171     0.95%       158.6         51.2
+
+Brightness range    : 34.5 - 219.4
+Brightness mean     : 133.06
+Brightness std      : 34.39
+Avg contrast (std)  : 54.48
+All images 48x48    : True
+All grayscale       : True
+
+Class imbalance note:
+  Most common  : happy (7,215 images)
+  Least common : disgust (436 images)
+  Imbalance ratio : 16.5x

@@ -1,0 +1,41 @@
+# ── Dataset (too large for git, download via Kaggle API) ──────────────────
+data/
+
+# ── Generated preprocessed images (reproducible via main.py) ──────────────
+output/batch_samples/
+
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual environments ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Jupyter ────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── OS / IDE ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Kaggle credentials (NEVER commit these) ────────────────────────────────
+kaggle.json
+*.json
+
+# ── Temp / logs ────────────────────────────────────────────────────────────
+*.log
+*.tmp

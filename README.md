@@ -1,5 +1,16 @@
 # FER2013 — Facial Expression Recognition
-**Phase 1: Dataset Exploration & Preprocessing**
+**Phase 1 Complete | CNN from Scratch: 66.3% Test Accuracy**
+
+---
+
+## Documentation
+
+| File | Purpose |
+|------|--------|
+| [README.md](README.md) | Setup and quick-start guide |
+| [WALKTHROUGH.md](WALKTHROUGH.md) | Full technical walkthrough — Stages 1 to 4 |
+| [PROJECT_PLAN.md](PROJECT_PLAN.md) | Stage tracker and decisions log |
+| [analytic_report.md](analytic_report.md) | Phase 1 dataset analysis report |
 
 ---
 
@@ -118,8 +129,50 @@ Grayscale Load -> Resize 48x48 -> CLAHE -> Gaussian Blur -> Normalize [0,1]
 
 ---
 
+## Stages Completed
+
+| Stage | Description | Status |
+|-------|-------------|--------|
+| 1 | Dataset download & project setup | Done |
+| 2 | Batch sampling, quality checks, preprocessing | Done |
+| 3 | Full preprocessing pipeline (augmentation, split, class weights) | Done |
+| **4** | **CNN from Scratch — 66.3% test accuracy** | **Done** |
+| 5 | Transfer Learning (MobileNetV2) | Next |
+| 6 | Evaluation (confusion matrix, F1, ROC) | Pending |
+| 7 | Repo cleanup | Pending |
+| 8 | Report & slides | Pending |
+| 9 | Deployment — Streamlit (Bonus) | Optional |
+
+---
+
+## Phase 1 Results
+
+| Metric | Value |
+|--------|-------|
+| Full training set | 28,709 images |
+| Batch validated | 210/210 usable (100%) |
+| Preprocessing | Grayscale, CLAHE, blur, normalize [0,1] |
+| Disgust augmentation | 436 → 2,180 (+1,744 images) |
+| Train / Val / Test split | 25,888 / 4,565 / 7,178 |
+
+## CNN from Scratch Results
+
+| Metric | Value |
+|--------|-------|
+| Test Accuracy | **66.27%** |
+| Best Val Accuracy | 65.83% (epoch 57) |
+| Total Parameters | 2,489,383 |
+| Training Time | ~102 min (CPU) |
+| Architecture | 4 Conv Blocks + Dense Head + Softmax(7) |
+
+See [WALKTHROUGH.md](WALKTHROUGH.md) for full details.
+
+---
+
 ## Phases
 
 - [x] **Phase 1** — Batch selection, quality checks, preprocessing, analysis
-- [ ] Phase 2 — Model architecture & training
-- [ ] Phase 3 — Evaluation & optimization
+- [x] **Phase 2 (Stage 4)** — CNN from scratch trained and evaluated
+- [ ] Phase 3 — Transfer Learning (MobileNetV2)
+- [ ] Phase 4 — Evaluation & model comparison
+- [ ] Phase 5 — Report, slides, deployment

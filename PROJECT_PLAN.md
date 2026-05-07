@@ -73,31 +73,40 @@
 
 ---
 
-## Stage 4 — CNN from Scratch `[ ] TODO`
+## Stage 4 — CNN from Scratch `[x] COMPLETE`
 
 > Build layer by layer — no shortcut model loading
 
-- [ ] Build `src/models/cnn_scratch.py`:
-  - [ ] Input layer (48x48x1 or 224x224x1)
-  - [ ] Conv2D + ReLU (block 1)
-  - [ ] MaxPooling2D
-  - [ ] Conv2D + ReLU (block 2)
-  - [ ] MaxPooling2D
-  - [ ] Conv2D + ReLU (block 3)
-  - [ ] MaxPooling2D
-  - [ ] Batch Normalization layers
-  - [ ] Flatten
-  - [ ] Dense (Fully Connected) layers
-  - [ ] Dropout (regularization)
-  - [ ] Output: Dense(7, activation='softmax')
-- [ ] Build `src/trainer.py` — training loop with callbacks:
-  - [ ] ModelCheckpoint (save best weights)
-  - [ ] EarlyStopping
-  - [ ] ReduceLROnPlateau
-- [ ] Train CNN scratch model on full preprocessed dataset
-- [ ] Save model weights: `models/cnn_scratch_best.h5`
-- [ ] Plot and save training curves (loss & accuracy vs epochs)
-- [ ] Commit: "Stage 4: CNN from scratch trained"
+- [x] Build `src/models/cnn_scratch.py`:
+  - [x] Input layer (48x48x1)
+  - [x] Conv2D + BN + ReLU block 1 (32 filters)
+  - [x] MaxPooling2D + Dropout(0.25)
+  - [x] Conv2D + BN + ReLU block 2 (64 filters)
+  - [x] MaxPooling2D + Dropout(0.25)
+  - [x] Conv2D + BN + ReLU block 3 (128 filters)
+  - [x] MaxPooling2D + Dropout(0.25)
+  - [x] Conv2D + BN + ReLU block 4 (256 filters)
+  - [x] MaxPooling2D + Dropout(0.25)
+  - [x] Flatten (2,304 units)
+  - [x] Dense(512) + BN + ReLU + Dropout(0.50)
+  - [x] Dense(256) + ReLU + Dropout(0.30)
+  - [x] Output Dense(7, softmax)
+- [x] Build `train_scratch.py` with callbacks:
+  - [x] ModelCheckpoint (save best val_accuracy)
+  - [x] EarlyStopping (patience=12)
+  - [x] ReduceLROnPlateau (patience=6, factor=0.5)
+  - [x] CSVLogger
+- [x] Train model -- 60 epochs, LR reduced at epoch 47 (0.001->0.0005)
+- [x] Save model: `models/cnn_scratch_best.keras`
+- [x] Plot training curves: `output/reports/scratch_training_curves.png`
+- [x] Save summary: `output/reports/scratch_summary.json`
+
+**Results:**
+- Total parameters    : 2,489,383
+- Best val accuracy   : 65.83% (epoch 57)
+- Test accuracy       : 66.27%
+- Training time       : ~102 min (CPU)
+
 
 ---
 
@@ -238,4 +247,4 @@
 
 ---
 
-*Last updated: 2026-05-07 | Stage 3 complete, moving to Stage 4 (CNN scratch)*
+*Last updated: 2026-05-07 | Stage 4 complete, ready for teammate to start Stage 5*

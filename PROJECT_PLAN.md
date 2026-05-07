@@ -47,28 +47,29 @@
 
 ---
 
-## Stage 3 — Full Preprocessing Pipeline `[ ] TODO`
+## Stage 3 — Full Preprocessing Pipeline `[x] COMPLETE`
 
 > Required by guidelines: resize, normalize, augmentation, train/val/test split, imbalance handling
 
-- [ ] **Resize all images to 224x224** (model-ready size, not just 48x48 batch sample)
-  - Note: FER2013 is natively 48x48 — decide: keep 48x48 or upscale to 224x224 for transfer learning
-- [ ] **Normalize pixel values** to `[0, 1]` (already done for batch; apply to full dataset)
-- [ ] **Data Augmentation** (use `ImageDataGenerator` or `albumentations`):
-  - [ ] Random horizontal flip
-  - [ ] Random rotation (±15°)
-  - [ ] Random zoom (10%)
-  - [ ] Brightness adjustment
-- [ ] **Train / Validation / Test Split** (70% / 15% / 15%)
-  - `data/train/` → 70% train, 15% val (split from train folder)
-  - Use `data/test/` as held-out test set
-- [ ] **Handle class imbalance** (choose one or combine):
-  - [ ] Option A: Class weights (inverse frequency weighting in loss function)
-  - [ ] Option B: Oversample minority class (Disgust) via augmentation
-  - [ ] Document chosen strategy and justify it
-- [ ] Build `src/full_preprocessor.py` — applies pipeline to entire dataset
-- [ ] Save preprocessed dataset stats and verify with plots
-- [ ] Commit: "Stage 3: Full preprocessing pipeline complete"
+- [x] **Resize all images to 224x224** for Transfer Learning pipeline (Pipeline B)
+      48x48 kept natively for CNN scratch (Pipeline A)
+- [x] **Normalize pixel values**: Pipeline A -> [0,1] | Pipeline B -> [-1,1] (MobileNetV2)
+- [x] **Data Augmentation** applied to training generators:
+  - [x] Random horizontal flip
+  - [x] Random rotation (15 deg)
+  - [x] Random zoom (10%)
+  - [x] Brightness adjustment [0.8, 1.2]
+- [x] **Train / Validation / Test Split**:
+  - data/train/ -> 85% train (25,888) / 15% val (4,565)
+  - data/test/ -> held-out test (7,178)
+- [x] **Handle class imbalance**:
+  - [x] Disgust augmented x4: 436 -> 2,180 images
+  - [x] Class weights computed (disgust=1.9956, happy=0.6030)
+  - [x] Saved class_weights.json
+- [x] Built `src/full_preprocessor.py` -- dual pipeline module
+- [x] Verified batch shapes: A=(32,48,48,1) B=(32,224,224,3)
+- [x] Saved class balance comparison plot
+- [x] Commit: "Stage 3: Full preprocessing pipeline complete"
 
 ---
 
@@ -227,15 +228,14 @@
 
 ---
 
-## Decisions to Make Before Stage 3
+## Decisions — CONFIRMED
 
-1. **Image size for models:** Keep 48x48 (native FER2013) or resize to 224x224 for transfer learning?
-   - Recommendation: Use 48x48 for CNN scratch, 224x224 for transfer learning
-2. **Transfer Learning backbone:** VGG16 vs ResNet50 vs MobileNetV2?
-   - Recommendation: MobileNetV2 (lighter, faster, good for small images)
-3. **Imbalance strategy:** Class weights vs augmentation-based oversampling?
-   - Recommendation: Combine both — class weights + augment Disgust class
+| # | Decision | Choice |
+|---|----------|--------|
+| 1 | Image size | **48x48 grayscale** for CNN scratch · **224x224 RGB** for Transfer Learning |
+| 2 | TL backbone | **MobileNetV2** (lightweight, fast, good for 48px upscaled faces) |
+| 3 | Imbalance fix | **Class weights + Disgust augmentation multiplier** (combined strategy) |
 
 ---
 
-*Last updated: 2026-05-07 | Phase 1 complete, moving to Stage 3*
+*Last updated: 2026-05-07 | Stage 3 complete, moving to Stage 4 (CNN scratch)*

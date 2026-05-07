@@ -34,7 +34,9 @@ Thumbs.db
 
 # ── Kaggle credentials (NEVER commit these) ────────────────────────────────
 kaggle.json
-*.json
+
+# Allow model output JSONs
+!output/**/*.json
 
 # ── Temp / logs ────────────────────────────────────────────────────────────
 *.log

@@ -115,40 +115,38 @@
 
 ---
 
-## Stage 5 — Transfer Learning (MobileNetV2) `[x] COMPLETE (needs retrain)`
+## Stage 5 — Transfer Learning (EfficientNetB0) `[x] COMPLETE (needs retrain)`
 
 > No drag-and-drop fine-tuning — every layer explicitly defined
 
 - [x] Build `src/models/transfer_learning.py`:
-  - [x] MobileNetV2 backbone loaded without top (`include_top=False`, `weights='imagenet'`)
+  - [x] EfficientNetB0 backbone loaded without top (`include_top=False`, `weights='imagenet'`)
   - [x] Freeze all base layers (Phase 1: feature extraction only)
   - [x] Custom classification head explicitly defined:
     - [x] `GlobalAveragePooling2D()`
     - [x] `Dense(256, relu)` + BatchNormalization + `Dropout(0.5)`
     - [x] `Dense(128, relu)` + `Dropout(0.3)`
     - [x] `Dense(7, softmax)`
-  - [x] Phase 2: `unfreeze_top_layers()` unfreezes last 30 layers (BN kept frozen)
+  - [x] Phase 2: `unfreeze_top_layers()` unfreezes last 50 layers (BN kept frozen)
 - [x] Build `train_transfer.py` with two-phase training:
-  - [x] Phase 1: LR=1e-3, epochs=15 (head only)
-  - [x] Phase 2: LR=1e-5, epochs=20 (fine-tuning last 30 layers)
+  - [x] Phase 1: LR=1e-3, epochs=25 (head only)
+  - [x] Phase 2: LR=1e-5, epochs=30 (fine-tuning last 50 layers)
   - [x] All callbacks: ModelCheckpoint, EarlyStopping(patience=8), ReduceLROnPlateau, CSVLogger
   - [x] Class weights applied
 - [x] Save model: `models/transfer_learning_best.keras`
 - [x] Plot training curves: `output/reports/transfer_training_curves.png`
 - [x] Save summary: `output/reports/transfer_summary.json`
 
-**First run results (had bugs — needs retrain):**
-- Test accuracy: 61.2% ← BELOW scratch baseline (bug confirmed)
+**Why EfficientNetB0 over MobileNetV2:**
+- MobileNetV2 tested but peaked at 64% (couldn't break CNN scratch baseline of 66.3%)
+- EfficientNetB0: compound scaling (width+depth+resolution) → better fine-grained feature maps
+- Expected: **70–74% test accuracy**
+- Same API, zero extra dependencies
 
-**Bugs fixed in `train_transfer.py`:**
-- [x] `steps_per_epoch` was hardcoded from wrong sample count (saw only 79% of data/epoch)
-- [x] `ReduceLROnPlateau` patience too aggressive in Phase 2 (4→6)
-- [x] Missing top-level `import math` (NameError crash)
-- [x] `BATCH` variable undefined (pipeline now returns steps directly)
-- [x] `build_tl_pipeline` now returns 5-tuple — all callers updated
-
-**⚠ ACTION NEEDED:** Run `python train_transfer.py` to retrain with fixes.  
-Expected result after fix: **68–73% test accuracy**
+**⚠ ACTION NEEDED:** Teammate must `git pull` and run:
+```bash
+python train_transfer.py    # defaults: --epochs1 25 --epochs2 30 --unfreeze 50
+```
 
 ---
 
@@ -215,14 +213,22 @@ python src/evaluator.py           # then generate full comparison
 
 ---
 
-## Stage 9 — Deployment (Bonus +1 to +4) `[ ] OPTIONAL`
+## Stage 9 — Deployment (Bonus +1 to +4) `[x] COMPLETE`
 
-- [ ] Build a Streamlit web app (`app.py`):
-  - [ ] Upload image or use webcam feed
-  - [ ] Preprocess with CLAHE pipeline
-  - [ ] Run inference using best saved model
-  - [ ] Display predicted emotion + confidence bar chart
-  - [ ] Show before/after CLAHE side-by-side
+- [x] Built `app.py` — Streamlit web application:
+  - [x] Upload any face image (jpg, png, webp)
+  - [x] Model selector: CNN Scratch or EfficientNetB0 Transfer Learning
+  - [x] Applies exact same preprocessing pipeline used during training
+  - [x] Shows predicted emotion with emoji + confidence percentage
+  - [x] Full confidence bar chart for all 7 emotions
+  - [x] Before/After CLAHE visualization for CNN Scratch model
+  - [x] Dark-themed premium UI
+
+**Run:**
+```bash
+pip install streamlit
+streamlit run app.py
+```
 
 ---
 
@@ -230,7 +236,7 @@ python src/evaluator.py           # then generate full comparison
 
 | Component | Marks | Status |
 |-----------|-------|--------|
-| Full Project (Code + Dataset + Models + Evaluation) | 10 | `[/]` Stage 6 pending retrain |
+| Full Project (Code + Dataset + Models + Evaluation) | 10 | `[/]` Stage 5 retrain in progress |
 | Presentation & Documentation | 5 | `[ ]` Not started |
 | Discussion / Viva | 5 | `[ ]` Upcoming Week 14 |
 | Deployment (Bonus) | +1 to +4 | `[ ]` Optional |
@@ -254,10 +260,11 @@ python src/evaluator.py           # then generate full comparison
 | # | Decision | Choice |
 |---|----------|--------|
 | 1 | Image size | **48x48 grayscale** for CNN scratch · **224x224 RGB** for Transfer Learning |
-| 2 | TL backbone | **MobileNetV2** (lightweight, fast, good for 48px upscaled faces) |
+| 2 | TL backbone | **EfficientNetB0** (switched from MobileNetV2 which peaked at 64%) |
 | 3 | Imbalance fix | **Class weights + Disgust augmentation x4** (combined strategy) |
 | 4 | Evaluation pipeline | Separate predict functions for Generator vs tf.data |
 | 5 | steps_per_epoch | Returned directly from `build_tl_pipeline()` (no manual counting) |
+| 6 | Deployment | Streamlit app `app.py` — supports both models |
 
 ---
 

@@ -219,9 +219,9 @@ def _make_decode_fn(augment: bool):
     Returns a tf.function that:
       1. Reads the JPEG/PNG from disk
       2. Decodes to RGB uint8
-      3. Resizes to 224×224
+      3. Resizes to 224x224
       4. Optionally applies augmentation (train only)
-      5. Applies MobileNetV2 preprocess_input → [-1, 1] float32
+      5. Applies EfficientNetB0 preprocess_input (torch-style normalization)
     """
     H, W = TL_IMG_SIZE
     
@@ -246,8 +246,8 @@ def _make_decode_fn(augment: bool):
             image = random_rotation(tf.expand_dims(image, 0), training=True)[0]
             image = random_zoom(tf.expand_dims(image, 0), training=True)[0]
 
-        # MobileNetV2 preprocessing: uint8-range [0,255] → float32 [-1, 1]
-        image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
+        # EfficientNetB0 preprocessing: [0,255] → torch-style normalized float32
+        image = tf.keras.applications.efficientnet.preprocess_input(image)
 
         # One-hot encode label
         one_hot = tf.one_hot(label, NUM_CLASSES)

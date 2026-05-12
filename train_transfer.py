@@ -1,15 +1,15 @@
 """
 train_transfer.py
 -----------------
-Stage 5 — Train the Transfer Learning (MobileNetV2) model on FER2013.
+Stage 5 — Train the Transfer Learning (EfficientNetB0) model on FER2013.
 
 Training strategy:
-  Phase 1  : Freeze MobileNetV2 backbone, train only the new emotion head.
-             Fast convergence, ~10 epochs.
-  Phase 2  : Unfreeze last 30 layers of backbone, fine-tune at LR=1e-5.
-             Specialises the features for face expressions, ~15 epochs.
+  Phase 1  : Freeze EfficientNetB0 backbone, train only the new emotion head.
+             Fast convergence, ~25 epochs, LR=1e-3.
+  Phase 2  : Unfreeze last 50 layers of backbone, fine-tune at LR=1e-5.
+             Specialises the features for face expressions, ~30 epochs.
 
-Expected result: 68–73% test accuracy (vs 66.3% CNN-scratch baseline).
+Expected result: 70-74% test accuracy (vs 66.3% CNN-scratch baseline).
 
 Outputs:
   models/transfer_learning_best.keras
@@ -138,19 +138,19 @@ def plot_training_curves(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train MobileNetV2 on FER2013")
-    parser.add_argument("--epochs1",    type=int,   default=15,   help="Phase 1 epochs (frozen base)")
-    parser.add_argument("--epochs2",    type=int,   default=20,   help="Phase 2 epochs (fine-tuning)")
+    parser = argparse.ArgumentParser(description="Train EfficientNetB0 on FER2013")
+    parser.add_argument("--epochs1",    type=int,   default=25,   help="Phase 1 epochs (frozen base)")
+    parser.add_argument("--epochs2",    type=int,   default=30,   help="Phase 2 epochs (fine-tuning)")
     parser.add_argument("--lr1",        type=float, default=1e-3, help="Phase 1 learning rate")
     parser.add_argument("--lr2",        type=float, default=1e-5, help="Phase 2 learning rate")
     parser.add_argument("--batch-size", type=int,   default=32,   help="Batch size")
-    parser.add_argument("--unfreeze",   type=int,   default=30,   help="Layers to unfreeze in Phase 2")
+    parser.add_argument("--unfreeze",   type=int,   default=50,   help="Layers to unfreeze in Phase 2")
     parser.add_argument("--no-weights", action="store_true",      help="Disable class weighting")
     args = parser.parse_args()
 
     print(f"\n{CYAN}{BOLD}")
     print("+============================================================+")
-    print("|   Stage 5 — Transfer Learning (MobileNetV2)               |")
+    print("|   Stage 5 — Transfer Learning (EfficientNetB0)            |")
     print("|   FER2013  |  224x224 RGB  |  7 emotion classes           |")
     print(f"+============================================================+{RESET}\n")
 
@@ -167,7 +167,7 @@ def main():
         print(f"  ✓ Class weights loaded.")
 
     # ── 2. Build model ─────────────────────────────────────────────────────────
-    print(f"\n{CYAN}[Step 2] Building MobileNetV2 + custom head...{RESET}")
+    print(f"\n{CYAN}[Step 2] Building EfficientNetB0 + custom head...{RESET}")
     model, base_model = build_transfer_learning_model()
 
     model.compile(
@@ -220,6 +220,7 @@ def main():
 
     # ── 5. Phase 2: Fine-tune top layers ──────────────────────────────────────
     print(f"\n{CYAN}[Step 4] Phase 2 — Fine-Tuning ({args.epochs2} more epochs, LR={args.lr2})...{RESET}")
+    print(f"  Unfreezing top {args.unfreeze} layers of EfficientNetB0 backbone.\n")
     unfreeze_top_layers(base_model, num_layers_to_unfreeze=args.unfreeze)
 
     model.compile(
@@ -258,7 +259,7 @@ def main():
     best_ep      = int(np.argmax(all_val_acc)) + 1
 
     summary = {
-        "model"            : "MobileNetV2_TransferLearning",
+        "model"            : "EfficientNetB0_TransferLearning",
         "phase1_epochs"    : args.epochs1,
         "phase2_epochs"    : args.epochs2,
         "lr_phase1"        : args.lr1,
@@ -276,7 +277,7 @@ def main():
     # ── Final report ───────────────────────────────────────────────────────────
     print(f"\n{GREEN}{BOLD}")
     print("╔══════════════════════════════════════════════════════════╗")
-    print("║   Stage 5 Complete — Transfer Learning Done             ║")
+    print("║   Stage 5 Complete — EfficientNetB0 Transfer Done       ║")
     print("╠══════════════════════════════════════════════════════════╣")
     print(f"║  Best Val Accuracy : {best_val_acc:.4f}  (epoch {best_ep})" + " " * (24 - len(f"{best_val_acc:.4f}  (epoch {best_ep})")) + "║")
     print(f"║  Test Accuracy     : {test_acc:.4f}" + " " * 33 + "║")

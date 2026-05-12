@@ -67,11 +67,24 @@ def load_model(model_path: str):
 
 
 # ── Preprocessing pipeline (identical to training) ────────────────────────────
-def preprocess_for_cnn(img_array: np.ndarray) -> np.ndarray:
+def preprocess_for_cnn(img_array: np.ndarray):
     """
-    Apply the exact same Pipeline A preprocessing used during training:
-    Grayscale → Resize 48x48 → CLAHE → Gaussian Blur → Normalize [0, 1]
+    Apply the EXACT same Pipeline A preprocessing used during training.
+
+    Training used ImageDataGenerator(rescale=1.0/255) with NO CLAHE and
+    NO Gaussian blur — those were only used in the Stage 2 exploratory
+    batch analysis (210 images), NOT the full training pipeline.
+
+    Correct pipeline:
+        Grayscale → Resize 48×48 → Normalize [0, 1]
+
+    Returns:
+        (model_input, raw_48x48, clahe_48x48)
+        model_input   — what the model actually receives (no CLAHE)
+        raw_48x48     — resized grayscale for display
+        clahe_48x48   — CLAHE version shown for comparison only (NOT fed to model)
     """
+    # Convert to grayscale
     if len(img_array.shape) == 3 and img_array.shape[2] == 3:
         gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
     elif len(img_array.shape) == 3 and img_array.shape[2] == 4:
@@ -79,12 +92,18 @@ def preprocess_for_cnn(img_array: np.ndarray) -> np.ndarray:
     else:
         gray = img_array
 
-    resized   = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
-    clahe     = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced  = clahe.apply(resized)
-    blurred   = cv2.GaussianBlur(enhanced, (3, 3), 0)
-    normalized = blurred.astype(np.float32) / 255.0
-    return normalized.reshape(1, 48, 48, 1), resized, enhanced
+    # Resize to 48x48 (same as target_size in ImageDataGenerator)
+    resized = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
+
+    # Normalize to [0, 1] (same as rescale=1/255 in ImageDataGenerator)
+    normalized = resized.astype(np.float32) / 255.0
+    model_input = normalized.reshape(1, 48, 48, 1)  # add batch + channel dims
+
+    # CLAHE version — for visual comparison display ONLY, not fed to model
+    clahe    = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(resized)
+
+    return model_input, resized, enhanced
 
 
 def preprocess_for_tl(img_array: np.ndarray) -> np.ndarray:
@@ -261,12 +280,13 @@ if uploaded_file is not None:
     # ── Before/After CLAHE (only for CNN scratch) ──────────────────────────────
     if not is_tl and raw_img_show is not None:
         st.divider()
-        st.markdown("#### 🔬 Preprocessing Effect (CLAHE)")
+        st.markdown("#### 🔬 Preprocessing Visualization (CLAHE)")
+        st.caption("⚠️ The model receives the **raw 48×48 grayscale** image (left). CLAHE is shown for reference only.")
         c1, c2 = st.columns(2)
         with c1:
-            st.image(raw_img_show, caption="After resize (48×48, no enhancement)", use_column_width=True, clamp=True)
+            st.image(raw_img_show, caption="✅ Model input: resize 48×48 + normalize (no CLAHE)", use_column_width=True, clamp=True)
         with c2:
-            st.image(enh_img_show, caption="After CLAHE (contrast enhanced)", use_column_width=True, clamp=True)
+            st.image(enh_img_show, caption="🔍 CLAHE effect (visual reference only, not fed to model)", use_column_width=True, clamp=True)
 
 else:
     # Empty state placeholder

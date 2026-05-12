@@ -183,12 +183,11 @@ with st.sidebar:
     st.markdown("- **7** emotion classes")
     st.markdown("- **48×48** grayscale")
     st.divider()
-    st.markdown("**🏗️ Preprocessing Pipeline**")
+    st.markdown("**🏗️ Preprocessing Pipeline (CNN)**")
     st.markdown("1. Convert to grayscale")
     st.markdown("2. Resize to 48×48")
-    st.markdown("3. CLAHE contrast enhancement")
-    st.markdown("4. Gaussian blur (denoise)")
-    st.markdown("5. Normalize to [0, 1]")
+    st.markdown("3. Normalize to [0, 1]")
+    st.caption("CLAHE shown for comparison only — not part of training pipeline.")
 
 
 # ── Main content ──────────────────────────────────────────────────────────────
@@ -229,7 +228,7 @@ if uploaded_file is not None:
 
     with col_img:
         st.markdown("#### 📷 Uploaded Image")
-        st.image(img_rgb, use_column_width=True, caption="Original image")
+        st.image(img_rgb, use_container_width=True, caption="Original image")
 
     # ── Run inference ─────────────────────────────────────────────────────────
     is_tl = "Transfer" in selected_model_name or "EfficientNet" in selected_model_name
@@ -284,9 +283,9 @@ if uploaded_file is not None:
         st.caption("⚠️ The model receives the **raw 48×48 grayscale** image (left). CLAHE is shown for reference only.")
         c1, c2 = st.columns(2)
         with c1:
-            st.image(raw_img_show, caption="✅ Model input: resize 48×48 + normalize (no CLAHE)", use_column_width=True, clamp=True)
+            st.image(raw_img_show, caption="✅ Model input: resize 48×48 + normalize (no CLAHE)", use_container_width=True, clamp=True)
         with c2:
-            st.image(enh_img_show, caption="🔍 CLAHE effect (visual reference only, not fed to model)", use_column_width=True, clamp=True)
+            st.image(enh_img_show, caption="🔍 CLAHE effect (visual reference only, not fed to model)", use_container_width=True, clamp=True)
 
 else:
     # Empty state placeholder

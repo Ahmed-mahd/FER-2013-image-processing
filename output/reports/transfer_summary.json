@@ -1,13 +1,13 @@
 {
-  "model": "MobileNetV2_TransferLearning",
-  "phase1_epochs": 20,
+  "model": "EfficientNetB0_TransferLearning",
+  "phase1_epochs": 25,
   "phase2_epochs": 30,
   "lr_phase1": 0.001,
   "lr_phase2": 1e-05,
-  "layers_unfrozen": 30,
-  "best_val_accuracy": 0.642294,
-  "best_val_epoch": 45,
-  "test_accuracy": 0.615213,
-  "test_loss": 1.04321,
-  "train_time_min": 30.1
+  "layers_unfrozen": 50,
+  "best_val_accuracy": 0.654991,
+  "best_val_epoch": 55,
+  "test_accuracy": 0.63221,
+  "test_loss": 0.992497,
+  "train_time_min": 39.1
 }

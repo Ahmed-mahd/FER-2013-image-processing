@@ -1,0 +1,13 @@
+{
+  "model": "MobileNetV2_TransferLearning",
+  "phase1_epochs": 15,
+  "phase2_epochs": 20,
+  "lr_phase1": 0.001,
+  "lr_phase2": 1e-05,
+  "layers_unfrozen": 30,
+  "best_val_accuracy": 0.61276,
+  "best_val_epoch": 35,
+  "test_accuracy": 0.584703,
+  "test_loss": 1.095918,
+  "train_time_min": 14.7
+}

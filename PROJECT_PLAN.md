@@ -110,7 +110,7 @@
 
 ---
 
-## Stage 5 — Transfer Learning (Built by Hand) `[ ] TODO`
+## Stage 5 — Transfer Learning (Built by Hand) `[/] IN PROGRESS`
 
 > No drag-and-drop fine-tuning — every layer must be explicitly defined
 
@@ -134,7 +134,7 @@
 
 ---
 
-## Stage 6 — Evaluation `[ ] TODO`
+## Stage 6 — Evaluation `[/] IN PROGRESS`
 
 > Core graded component — must be thorough with visualizations
 
@@ -247,4 +247,4 @@
 
 ---
 
-*Last updated: 2026-05-07 | Stage 4 complete, ready for teammate to start Stage 5*
+*Last updated: 2026-05-09 | Stage 5 and 6 in progress*

@@ -137,8 +137,8 @@ Grayscale Load -> Resize 48x48 -> CLAHE -> Gaussian Blur -> Normalize [0,1]
 | 2 | Batch sampling, quality checks, preprocessing | Done |
 | 3 | Full preprocessing pipeline (augmentation, split, class weights) | Done |
 | **4** | **CNN from Scratch — 66.3% test accuracy** | **Done** |
-| 5 | Transfer Learning (MobileNetV2) | Next |
-| 6 | Evaluation (confusion matrix, F1, ROC) | Pending |
+| 5 | Transfer Learning (MobileNetV2) | Done |
+| 6 | Evaluation (confusion matrix, F1, ROC) | Done |
 | 7 | Repo cleanup | Pending |
 | 8 | Report & slides | Pending |
 | 9 | Deployment — Streamlit (Bonus) | Optional |
@@ -173,6 +173,6 @@ See [WALKTHROUGH.md](WALKTHROUGH.md) for full details.
 
 - [x] **Phase 1** — Batch selection, quality checks, preprocessing, analysis
 - [x] **Phase 2 (Stage 4)** — CNN from scratch trained and evaluated
-- [ ] Phase 3 — Transfer Learning (MobileNetV2)
-- [ ] Phase 4 — Evaluation & model comparison
+- [x] Phase 3 — Transfer Learning (MobileNetV2)
+- [x] Phase 4 — Evaluation & model comparison
 - [ ] Phase 5 — Report, slides, deployment

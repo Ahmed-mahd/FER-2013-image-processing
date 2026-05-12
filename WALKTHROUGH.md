@@ -394,21 +394,28 @@ print(f"Prediction: {predicted_emotion}  ({confidence*100:.1f}% confidence)")
 
 | Stage | Task | Script to create |
 |-------|------|-----------------|
-| **5** | Transfer Learning (MobileNetV2) | `train_transfer.py` + `src/models/transfer_model.py` |
-| **6** | Evaluation: confusion matrix, F1, ROC | `evaluate.py` |
+| **5** | Transfer Learning (MobileNetV2) | **Done** |
+| **6** | Evaluation: confusion matrix, F1, ROC | **Done** (`src/evaluator.py`) |
 | **7** | Repo cleanup + final structure | — |
 | **8** | Written report (PDF) + slides | — |
 | **9** | Deployment: Streamlit web app (bonus) | `app.py` |
 
-### Stage 5 notes for teammate
-- Use **Pipeline B** (224×224 RGB) from `src/full_preprocessor.py`
-- Load MobileNetV2 backbone with `include_top=False`
-- **Phase 1**: freeze all base layers, train custom head only
-- **Phase 2**: unfreeze last 30 layers, fine-tune with low LR (1e-5)
-- Save to `models/transfer_best.keras`
-- Log to `output/reports/transfer_training_log.csv`
+---
 
-See `PROJECT_PLAN.md` for the full stage checklist.
+## Stage 5 & 6 — Transfer Learning & Evaluation
+
+### Stage 5: Transfer Learning (MobileNetV2)
+- Added `src/models/transfer_learning.py` using Keras `MobileNetV2` with `include_top=False`.
+- The base model is frozen initially, and a custom classification head (`GlobalAveragePooling2D` -> `Dense(256)` -> `Dense(128)` -> `Dense(7)`) is added.
+- Added `train_transfer.py` which trains the model in two phases:
+  - **Phase 1**: Trains only the custom top layers using `Adam(1e-3)`.
+  - **Phase 2**: Unfreezes the top 20 layers of the base model and fine-tunes with a lower learning rate `Adam(1e-5)`.
+
+### Stage 6: Evaluation
+- Added `src/evaluator.py`.
+- Generates accuracy, precision, recall, and F1-score for both the `CNN_Scratch` and `MobileNetV2` models.
+- Plots confusion matrices to visually compare the misclassifications.
+- Note: Requires the full FER2013 dataset downloaded in `data/train/` to execute successfully.
 
 ---
 
@@ -426,4 +433,4 @@ See `PROJECT_PLAN.md` for the full stage checklist.
 
 ---
 
-*Document generated: 2026-05-07 | Stages 1-4 complete*
+*Document generated: 2026-05-09 | Stages 1-6 complete/implemented*

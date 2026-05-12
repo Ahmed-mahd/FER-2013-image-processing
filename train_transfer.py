@@ -157,14 +157,14 @@ def main():
     print(f"{CYAN}[Step 1] Building Pipeline B (224x224 RGB — tf.data FAST)...{RESET}")
     train_ds, val_ds, test_ds = build_tl_pipeline(batch_size=args.batch_size)
 
-    # Compute steps from dataset cardinalities (tf.data datasets don't have .samples)
-    BATCH = args.batch_size
-    import math
-    # Approximate steps: total images / batch_size
-    TRAIN_SAMPLES = int(25453 * 0.85)   # ~25,888 train * 0.85 split
-    VAL_SAMPLES   = int(25453 * 0.15)
-    train_steps = math.ceil(TRAIN_SAMPLES / BATCH)
-    val_steps   = math.ceil(VAL_SAMPLES   / BATCH)
+    # Derive steps from actual dataset size (after Disgust augmentation)
+    # build_tl_pipeline already did the 85/15 split — get counts from the ds
+    TRAIN_SAMPLES = sum(1 for _ in train_ds.unbatch())   # exact count
+    VAL_SAMPLES   = sum(1 for _ in val_ds.unbatch())
+    train_steps   = math.ceil(TRAIN_SAMPLES / BATCH)
+    val_steps     = math.ceil(VAL_SAMPLES   / BATCH)
+    print(f"  Train samples : {TRAIN_SAMPLES:,}  ({train_steps} steps/epoch)")
+    print(f"  Val samples   : {VAL_SAMPLES:,}  ({val_steps} steps/epoch)")
 
     class_weights = None if args.no_weights else load_class_weights()
     if class_weights:
@@ -181,7 +181,8 @@ def main():
     )
 
     # ── 3. Callbacks ───────────────────────────────────────────────────────────
-    def make_callbacks(csv_append: bool = False):
+    def make_callbacks(csv_append: bool = False, phase: int = 1):
+        lr_patience = 4 if phase == 1 else 6   # less aggressive in phase 2
         return [
             ModelCheckpoint(
                 filepath      = str(MODEL_SAVE_PATH),
@@ -198,8 +199,8 @@ def main():
             ReduceLROnPlateau(
                 monitor  = "val_loss",
                 factor   = 0.5,
-                patience = 4,
-                min_lr   = 1e-8,
+                patience = lr_patience,
+                min_lr   = 1e-7,
                 verbose  = 1,
             ),
             CSVLogger(str(CSV_LOG_PATH), append=csv_append),
@@ -217,7 +218,7 @@ def main():
         validation_data     = val_ds,
         validation_steps    = val_steps,
         class_weight        = class_weights,
-        callbacks           = make_callbacks(csv_append=False),
+        callbacks           = make_callbacks(csv_append=False, phase=1),
         verbose             = 1,
     )
 
@@ -240,7 +241,7 @@ def main():
         validation_data     = val_ds,
         validation_steps    = val_steps,
         class_weight        = class_weights,
-        callbacks           = make_callbacks(csv_append=True),
+        callbacks           = make_callbacks(csv_append=True, phase=2),
         verbose             = 1,
     )
 

@@ -14,6 +14,8 @@ Steps applied to each image:
 
 import cv2
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
 from pathlib import Path
 
 
@@ -101,9 +103,6 @@ def preprocess_batch(
           y      – int array of emotion labels
           labels – list of emotion names
     """
-    import pandas as pd
-    from tqdm import tqdm
-
     out_path = Path(output_dir)
 
     # Only process usable images

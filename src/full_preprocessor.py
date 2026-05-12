@@ -300,7 +300,7 @@ def build_tl_pipeline(
     which keeps the GPU at ~90% utilization vs ~25% with the old approach.
 
     Returns:
-        (train_ds, val_ds, test_ds) — tf.data.Dataset objects
+        (train_ds, val_ds, test_ds, train_steps, val_steps)
     """
     # ── Collect all training file paths ──────────────────────────────────────
     all_paths, all_labels = _collect_paths_and_labels(train_dir)
@@ -325,8 +325,9 @@ def build_tl_pipeline(
     val_ds   = _build_tf_dataset(val_paths,   val_labels,   batch_size, augment=False, shuffle=False)
     test_ds  = _build_tf_dataset(test_paths,  test_labels,  batch_size, augment=False, shuffle=False)
 
-    train_steps = len(train_paths) // batch_size
-    val_steps   = len(val_paths)   // batch_size
+    import math
+    train_steps = math.ceil(len(train_paths) / batch_size)
+    val_steps   = math.ceil(len(val_paths)   / batch_size)
 
     print(f"\n  [Pipeline B — MobileNetV2  224x224 RGB  tf.data FAST]")
     print(f"    Train samples      : {len(train_paths):,}")
@@ -334,6 +335,7 @@ def build_tl_pipeline(
     print(f"    Test samples       : {len(test_paths):,}")
     print(f"    Batch size         : {batch_size}")
     print(f"    Steps/epoch(train) : {train_steps}")
+    print(f"    Steps/epoch(val)   : {val_steps}")
     print(f"    Prefetch + parallel: AUTOTUNE  ← GPU stays fed")
 
-    return train_ds, val_ds, test_ds
+    return train_ds, val_ds, test_ds, train_steps, val_steps

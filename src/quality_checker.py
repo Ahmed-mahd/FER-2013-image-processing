@@ -7,6 +7,8 @@ Flags images that are corrupt, blank, too dark, too bright, or wrong size.
 
 import cv2
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
 from pathlib import Path
 
 
@@ -87,7 +89,7 @@ def check_image_quality(filepath: str) -> dict:
     return result
 
 
-def run_quality_checks(batch_df) -> "pd.DataFrame":
+def run_quality_checks(batch_df: pd.DataFrame) -> pd.DataFrame:
     """
     Run quality checks on all images in the batch DataFrame.
 
@@ -97,9 +99,6 @@ def run_quality_checks(batch_df) -> "pd.DataFrame":
     Returns:
         DataFrame with quality metrics merged into the batch.
     """
-    import pandas as pd
-    from tqdm import tqdm
-
     print("\n  Running quality checks...")
     results = []
     for _, row in tqdm(batch_df.iterrows(), total=len(batch_df), desc="  Checking", unit="img"):

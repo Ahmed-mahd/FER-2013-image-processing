@@ -170,8 +170,6 @@ def plot_before_after(batch_df: pd.DataFrame, output_dir: Path, n_samples: int =
       Left column  = raw image
       Right column = preprocessed image with CLAHE applied
     """
-    import cv2
-
     emotions = sorted(batch_df["emotion_name"].unique())
     n_rows   = len(emotions)
     n_cols   = 2  # raw | preprocessed
@@ -179,9 +177,12 @@ def plot_before_after(batch_df: pd.DataFrame, output_dir: Path, n_samples: int =
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(6, n_rows * 1.9))
     fig.patch.set_facecolor(DARK_BG)
 
+    # Guarantee axes is always 2D even if n_rows == 1
+    axes = np.atleast_2d(axes)
+
     # Column headers
-    axes[0][0].set_title("RAW", color="#F39C12", fontsize=13, fontweight="bold", pad=8)
-    axes[0][1].set_title("PREPROCESSED\n(CLAHE + Blur + Normalize)",
+    axes[0, 0].set_title("RAW", color="#F39C12", fontsize=13, fontweight="bold", pad=8)
+    axes[0, 1].set_title("PREPROCESSED\n(CLAHE + Blur + Normalize)",
                           color="#27AE60", fontsize=11, fontweight="bold", pad=8)
 
     for row_idx, emotion in enumerate(emotions):
@@ -197,14 +198,14 @@ def plot_before_after(batch_df: pd.DataFrame, output_dir: Path, n_samples: int =
             raw = np.zeros((48, 48), dtype=np.uint8)
 
         # ── Produce preprocessed inline ──
-        resized = cv2.resize(raw, (48, 48), interpolation=cv2.INTER_AREA)
-        clahe   = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        resized  = cv2.resize(raw, (48, 48), interpolation=cv2.INTER_AREA)
+        clahe    = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
         enhanced = clahe.apply(resized)
         blurred  = cv2.GaussianBlur(enhanced, (3, 3), 0)
-        normed   = (blurred.astype(np.float32) / 255.0)   # [0,1] for display
+        normed   = blurred.astype(np.float32) / 255.0   # [0,1] for display
 
         # ── Left: raw ──
-        ax_raw = axes[row_idx][0]
+        ax_raw = axes[row_idx, 0]
         ax_raw.imshow(raw, cmap="gray", vmin=0, vmax=255)
         ax_raw.axis("off")
         ax_raw.set_ylabel(emotion,
@@ -213,7 +214,7 @@ def plot_before_after(batch_df: pd.DataFrame, output_dir: Path, n_samples: int =
                           rotation=0, labelpad=55, va="center")
 
         # ── Right: preprocessed ──
-        ax_pre = axes[row_idx][1]
+        ax_pre = axes[row_idx, 1]
         ax_pre.imshow(normed, cmap="gray", vmin=0, vmax=1)
         ax_pre.axis("off")
 

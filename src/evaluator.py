@@ -159,7 +159,7 @@ def main():
     tl_path = Path("models/transfer_learning_best.keras")
     if tl_path.exists():
         print("[2/2] Loading MobileNetV2 model + Pipeline B...")
-        _, _, test_tl = build_tl_pipeline(batch_size=32)
+        _, _, test_tl, _, _ = build_tl_pipeline(batch_size=32)
         tl_model = tf.keras.models.load_model(tl_path)
         y_true, y_pred = predict_from_tf_dataset(tl_model, test_tl)
         results["MobileNetV2"] = evaluate_model(tl_path, y_true, y_pred, "MobileNetV2")

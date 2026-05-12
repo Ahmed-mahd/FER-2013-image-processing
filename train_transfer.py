@@ -156,16 +156,11 @@ def main():
 
     # ── 1. Data pipelines ──────────────────────────────────────────────────────
     print(f"{CYAN}[Step 1] Building Pipeline B (224x224 RGB — tf.data FAST)...{RESET}")
-    train_ds, val_ds, test_ds = build_tl_pipeline(batch_size=args.batch_size)
-
-    # Derive steps from actual dataset size (after Disgust augmentation)
-    # build_tl_pipeline already did the 85/15 split — get counts from the ds
-    TRAIN_SAMPLES = sum(1 for _ in train_ds.unbatch())   # exact count
-    VAL_SAMPLES   = sum(1 for _ in val_ds.unbatch())
-    train_steps   = math.ceil(TRAIN_SAMPLES / BATCH)
-    val_steps     = math.ceil(VAL_SAMPLES   / BATCH)
-    print(f"  Train samples : {TRAIN_SAMPLES:,}  ({train_steps} steps/epoch)")
-    print(f"  Val samples   : {VAL_SAMPLES:,}  ({val_steps} steps/epoch)")
+    train_ds, val_ds, test_ds, train_steps, val_steps = build_tl_pipeline(
+        batch_size=args.batch_size
+    )
+    print(f"  Train steps/epoch : {train_steps}")
+    print(f"  Val   steps/epoch : {val_steps}")
 
     class_weights = None if args.no_weights else load_class_weights()
     if class_weights:

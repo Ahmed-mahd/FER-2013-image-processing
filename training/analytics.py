@@ -18,10 +18,10 @@ import matplotlib.gridspec as gridspec
 import cv2
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-REPORT_CSV  = Path("output/reports/quality_report.csv")
-OUT_DIR     = Path("output/reports")
+REPORT_CSV  = Path("output/reports/stage2_eda/quality_report.csv")
+OUT_DIR     = Path("output/reports/stage2_eda")
 FULL_TRAIN  = Path("data/train")
 
 EMOTION_COLORS = {

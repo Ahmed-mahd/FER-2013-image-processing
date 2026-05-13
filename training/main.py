@@ -25,7 +25,7 @@ import argparse
 from pathlib import Path
 
 # ── Ensure src/ is on the path ───────────────────────────────────────────────
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.batch_selector  import discover_dataset, select_random_batch
 from src.quality_checker import run_quality_checks

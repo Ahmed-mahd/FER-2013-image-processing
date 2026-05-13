@@ -31,7 +31,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.full_preprocessor import build_scratch_pipeline, EMOTION_CLASSES
 from src.models.cnn_scratch import build_cnn_scratch, compile_model
@@ -43,14 +43,14 @@ from tensorflow.keras.callbacks import (
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 MODELS_DIR  = Path("models")
-REPORTS_DIR = Path("output/reports")
+REPORTS_DIR = Path("output/reports/stage4_cnn_scratch")
 MODELS_DIR.mkdir(exist_ok=True)
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 MODEL_SAVE_PATH  = MODELS_DIR / "cnn_scratch_best.keras"
 CSV_LOG_PATH     = REPORTS_DIR / "scratch_training_log.csv"
 CURVES_SAVE_PATH = REPORTS_DIR / "scratch_training_curves.png"
-WEIGHTS_JSON     = REPORTS_DIR / "class_weights.json"
+WEIGHTS_JSON     = Path("output/reports/stage3_preprocessing/class_weights.json")
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 CYAN   = "\033[96m"; BOLD = "\033[1m"; GREEN = "\033[92m"

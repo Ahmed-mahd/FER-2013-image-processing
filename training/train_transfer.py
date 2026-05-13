@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # ── Project root on sys.path ───────────────────────────────────────────────────
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import tensorflow as tf
 
@@ -53,14 +53,14 @@ from src.models.transfer_learning import build_transfer_learning_model, unfreeze
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 MODELS_DIR  = Path("models")
-REPORTS_DIR = Path("output/reports")
+REPORTS_DIR = Path("output/reports/stage5_transfer_learning")
 MODELS_DIR.mkdir(exist_ok=True)
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 MODEL_SAVE_PATH  = MODELS_DIR / "transfer_learning_best.keras"
 CSV_LOG_PATH     = REPORTS_DIR / "transfer_training_log.csv"
 CURVES_SAVE_PATH = REPORTS_DIR / "transfer_training_curves.png"
-WEIGHTS_JSON     = REPORTS_DIR / "class_weights.json"
+WEIGHTS_JSON     = Path("output/reports/stage3_preprocessing/class_weights.json")
 SUMMARY_JSON     = REPORTS_DIR / "transfer_summary.json"
 
 # ── Terminal colours ───────────────────────────────────────────────────────────

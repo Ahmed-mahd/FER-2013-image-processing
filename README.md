@@ -1,178 +1,142 @@
 # FER2013 — Facial Expression Recognition
-**Phase 1 Complete | CNN from Scratch: 66.3% Test Accuracy**
+
+A complete deep learning pipeline that classifies 48×48 grayscale face images into **7 emotions** using the FER2013 dataset.
+
+**Models:** CNN from Scratch (66.2%) vs EfficientNetB0 Transfer Learning (63.2%)
 
 ---
 
-## Documentation
+## Results
 
-| File | Purpose |
-|------|--------|
-| [README.md](README.md) | Setup and quick-start guide |
-| [WALKTHROUGH.md](WALKTHROUGH.md) | Full technical walkthrough — Stages 1 to 4 |
-| [PROJECT_PLAN.md](PROJECT_PLAN.md) | Stage tracker and decisions log |
-| [analytic_report.md](analytic_report.md) | Phase 1 dataset analysis report |
-
----
-
-## Project Overview
-
-This repository contains Phase 1 of a Facial Expression Recognition (FER) project using the [FER2013 dataset](https://www.kaggle.com/datasets/msambare/fer2013).
-
-The goal of Phase 1 is to:
-- Select a stratified random batch from the FER2013 training set
-- Validate image quality (corrupt, blank, too dark/bright)
-- Run a preprocessing pipeline (CLAHE, denoising, normalization)
-- Generate visual and statistical analysis reports
-
-## Dataset
-
-**FER2013** — 48x48 grayscale facial expression images
-
-| Emotion  | Training Images |
-|----------|----------------|
-| Angry    | 3,995          |
-| Disgust  | 436            |
-| Fear     | 4,097          |
-| Happy    | 7,215          |
-| Neutral  | 4,965          |
-| Sad      | 4,830          |
-| Surprise | 3,171          |
-| **Total**| **28,709**     |
-
-> The dataset is **not included** in this repo (too large). Download it from Kaggle — see Setup below.
+| Metric | CNN Scratch | EfficientNetB0 |
+|--------|:-----------:|:--------------:|
+| Test Accuracy | **66.23%** | 63.22% |
+| Macro Precision | 68.05% | 62.68% |
+| Macro Recall | 58.87% | 60.41% |
+| Macro F1-Score | 59.77% | 60.80% |
+| Training Time | ~102 min (CPU) | ~39 min (GPU) |
+| Trainable Params | 2,489,383 | 362,247 (Ph1) / 4.4M (Ph2) |
 
 ---
 
 ## Project Structure
 
 ```
-project/
+FER-2013-image-processing/
+├── data/
+│   ├── train/<emotion>/          # 28,709 training images
+│   └── test/<emotion>/           # 7,178 test images
+├── models/
+│   ├── cnn_scratch_best.keras    # Stage 4 — CNN Scratch
+│   └── transfer_learning_best.keras  # Stage 5 — EfficientNetB0
+├── output/reports/
+│   ├── stage2_eda/               # Quality checks, histograms, class distribution
+│   ├── stage3_preprocessing/     # CLAHE comparison, augmentation samples, class weights
+│   ├── stage4_cnn_scratch/       # Training curves, log, summary JSON
+│   ├── stage5_transfer_learning/ # Training curves, log, summary JSON
+│   └── stage6_evaluation/        # Confusion matrices, ROC curves, comparison chart
 ├── src/
-│   ├── batch_selector.py    # Stratified random batch selection
-│   ├── quality_checker.py   # Image quality validation
-│   ├── preprocessor.py      # CLAHE + blur + normalization pipeline
-│   └── visualizer.py        # Analysis plot generation
-├── output/
-│   └── reports/             # Generated plots and quality CSV
-├── main.py                  # Run Phase 1 pipeline
-├── analytics.py             # Generate analytic dashboard
-├── analytic_report.md       # Full Phase 1 report
+│   ├── models/
+│   │   ├── cnn_scratch.py        # CNN architecture (from scratch)
+│   │   └── transfer_learning.py  # EfficientNetB0 + custom head
+│   ├── full_preprocessor.py      # Pipeline A (48×48 grayscale) + Pipeline B (224×224 RGB)
+│   ├── evaluator.py              # Stage 6 — evaluation & comparison
+│   ├── visualizer.py             # Plotting utilities
+│   └── quality_checker.py        # Stage 2 — dataset quality checks
+├── app.py                        # Streamlit demo app (Stage 9)
+├── train_scratch.py              # Stage 4 training script
+├── train_transfer.py             # Stage 5 training script
+├── prepare_data.py               # Stage 3 — augmentation + class weights
+├── analytics.py                  # Stage 2 — EDA
 └── requirements.txt
 ```
 
 ---
 
-## Setup
+## Quick Start (from scratch)
 
-### 1. Clone the repo
+### 1. Clone & install
+
 ```bash
 git clone https://github.com/Ahmed-mahd/FER-2013-image-processing.git
 cd FER-2013-image-processing
-```
-
-### 2. Install dependencies
-```bash
 pip install -r requirements.txt
 ```
 
-### 3. Download the dataset
-Configure your Kaggle credentials:
+### 2. Download FER2013 dataset
+
 ```bash
-# Create ~/.kaggle/kaggle.json with your username and API key
-# {"username": "your-username", "key": "your-api-key"}
+kaggle datasets download -d msambare/fer2013
+unzip fer2013.zip -d data/
+# Ensure structure: data/train/<emotion>/ and data/test/<emotion>/
 ```
 
-Download and extract:
+### 3. Prepare data (augmentation + class weights)
+
 ```bash
-kaggle datasets download -d msambare/fer2013 -p data/ --unzip
+python prepare_data.py
 ```
 
-### 4. Run Phase 1
+### 4. Train CNN from Scratch
+
 ```bash
-# Default: 210 images (30/class), seed=42
-python main.py
-
-# Custom batch size and seed
-python main.py --batch-size 350 --seed 99
+python train_scratch.py
+# Outputs → output/reports/stage4_cnn_scratch/
+# Model   → models/cnn_scratch_best.keras
 ```
 
-### 5. Generate analytic report
+### 5. Train Transfer Learning (EfficientNetB0)
+
 ```bash
-python analytics.py
+# With GPU (recommended):
+NVIDIA_BASE="$HOME/.local/lib/python3.12/site-packages/nvidia"
+CUDA_LIBS=$(find "$NVIDIA_BASE" -type d -name "lib" | tr '\n' ':')
+LD_LIBRARY_PATH="${CUDA_LIBS}${LD_LIBRARY_PATH}" python train_transfer.py
+
+# Without GPU:
+python train_transfer.py
+# Outputs → output/reports/stage5_transfer_learning/
+# Model   → models/transfer_learning_best.keras
+```
+
+### 6. Evaluate both models
+
+```bash
+python src/evaluator.py
+# Outputs → output/reports/stage6_evaluation/
+#   - cnn_scratch_confusion_matrix.png
+#   - cnn_scratch_roc_curves.png
+#   - efficientnetb0_confusion_matrix.png
+#   - efficientnetb0_roc_curves.png
+#   - model_comparison.png
+#   - evaluation_results.json
+```
+
+### 7. Run the Streamlit demo app
+
+```bash
+streamlit run app.py
+# Open: http://localhost:8501
+# Upload any face photo → get emotion prediction
 ```
 
 ---
 
-## Phase 1 Results
+## GPU Setup (NVIDIA RTX 3050 Ti / any NVIDIA GPU)
 
-| Metric | Value |
-|--------|-------|
-| Batch size | 210 images (30/class) |
-| Usable images | 210/210 (100%) |
-| Preprocessing output | (210, 48, 48) float32 |
-| Pixel mean (post-CLAHE) | 0.541 |
-| Pixel std (post-CLAHE) | 0.206 |
+If TensorFlow doesn't detect your GPU:
 
-See [analytic_report.md](analytic_report.md) for the full report with visualizations.
-
----
-
-## Preprocessing Pipeline
-
-```
-Grayscale Load -> Resize 48x48 -> CLAHE -> Gaussian Blur -> Normalize [0,1]
+```bash
+# Add to ~/.bashrc for persistent fix:
+NVIDIA_SITE=$(python3 -c "import site; print(site.getsitepackages()[0])")/nvidia
+CUDA_LIBS=$(find "$NVIDIA_SITE" -type d -name "lib" 2>/dev/null | tr '\n' ':')
+export LD_LIBRARY_PATH="${CUDA_LIBS}${LD_LIBRARY_PATH}"
 ```
 
-- **CLAHE** (Contrast Limited Adaptive Histogram Equalization): enhances local contrast without amplifying noise
-- **Gaussian Blur** (3x3): light denoising
-- **Normalization**: scales pixel values to [0.0, 1.0] float32 for model input
-
 ---
 
-## Stages Completed
+## Environment
 
-| Stage | Description | Status |
-|-------|-------------|--------|
-| 1 | Dataset download & project setup | Done |
-| 2 | Batch sampling, quality checks, preprocessing | Done |
-| 3 | Full preprocessing pipeline (augmentation, split, class weights) | Done |
-| **4** | **CNN from Scratch — 66.3% test accuracy** | **Done** |
-| 5 | Transfer Learning (MobileNetV2) | Done |
-| 6 | Evaluation (confusion matrix, F1, ROC) | Done |
-| 7 | Repo cleanup | Pending |
-| 8 | Report & slides | Pending |
-| 9 | Deployment — Streamlit (Bonus) | Optional |
-
----
-
-## Phase 1 Results
-
-| Metric | Value |
-|--------|-------|
-| Full training set | 28,709 images |
-| Batch validated | 210/210 usable (100%) |
-| Preprocessing | Grayscale, CLAHE, blur, normalize [0,1] |
-| Disgust augmentation | 436 → 2,180 (+1,744 images) |
-| Train / Val / Test split | 25,888 / 4,565 / 7,178 |
-
-## CNN from Scratch Results
-
-| Metric | Value |
-|--------|-------|
-| Test Accuracy | **66.27%** |
-| Best Val Accuracy | 65.83% (epoch 57) |
-| Total Parameters | 2,489,383 |
-| Training Time | ~102 min (CPU) |
-| Architecture | 4 Conv Blocks + Dense Head + Softmax(7) |
-
-See [WALKTHROUGH.md](WALKTHROUGH.md) for full details.
-
----
-
-## Phases
-
-- [x] **Phase 1** — Batch selection, quality checks, preprocessing, analysis
-- [x] **Phase 2 (Stage 4)** — CNN from scratch trained and evaluated
-- [x] Phase 3 — Transfer Learning (MobileNetV2)
-- [x] Phase 4 — Evaluation & model comparison
-- [ ] Phase 5 — Report, slides, deployment
+- Python 3.12
+- TensorFlow 2.x (with CUDA 12.x / cuDNN 9.x)
+- See `requirements.txt` for full dependency list

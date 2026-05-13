@@ -28,7 +28,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.full_preprocessor import (
     TRAIN_DIR, TEST_DIR, EMOTION_CLASSES, BATCH_SIZE,
     augment_minority_class, remove_augmented_images,
@@ -36,7 +36,7 @@ from src.full_preprocessor import (
     MINORITY_CLASS, MINORITY_MULTIPLIER,
 )
 
-OUT_DIR = Path("output/reports")
+OUT_DIR = Path("output/reports/stage3_preprocessing")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 GREEN  = "\033[92m"

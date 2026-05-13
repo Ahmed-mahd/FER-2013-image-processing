@@ -1,11 +1,14 @@
 # FER2013 — Phase 1 Analytic Report
+
 **Real Kaggle Dataset | Batch: 210 images | Seed: 42**
+
+> *Note: All visualizations reference `output/reports/stage2_eda/` for EDA outputs and `output/reports/stage3_preprocessing/` for preprocessing outputs.*
 
 ---
 
 ## Analytics Dashboard
 
-![Analytics Dashboard](output/reports/analytics_dashboard.png)
+![Analytics Dashboard](../output/reports/stage2_eda/analytics_dashboard.png)
 
 ---
 
@@ -36,7 +39,7 @@
 | Surprise | 3,171       | 30           | 0.95%     |
 
 > **Warning — Critical class imbalance:** `Happy` (7,215) has **16.6x more samples** than `Disgust` (436).
-> This must be addressed in Phase 2 via class weighting, oversampling, or data augmentation.
+> Addressed in Stage 3 via class weighting + disk augmentation (Disgust ×4).
 
 ---
 
@@ -76,33 +79,33 @@
 
 ## 5. Preprocessing Validation
 
-After the full pipeline (CLAHE + Gaussian blur + normalization):
+After the full pipeline (resize + normalize — no CLAHE in training pipeline):
 
 | Metric           | Value             |
 |------------------|-------------------|
 | Output dtype     | `float32`         |
 | Output shape     | `(210, 48, 48)`   |
-| Pixel range      | `[0.047, 1.000]`  |
+| Pixel range      | `[0.0, 1.000]`    |
 | Mean pixel value | `0.541`           |
 | Std pixel value  | `0.206`           |
 
-The higher std (0.206) compared to raw confirms **CLAHE successfully enhanced contrast diversity** — important for model generalization.
+> CLAHE is applied for exploratory visualization only — the training pipeline uses plain rescale [0,1].
 
 ---
 
 ## 6. Sample Visualizations
 
 ### Raw Samples (Before Preprocessing)
-![Raw Samples](output/reports/sample_grid_raw.png)
+![Raw Samples](../output/reports/stage2_eda/sample_grid_raw.png)
 
-### Before vs After Preprocessing
-![Before After](output/reports/before_after_comparison.png)
+### Before vs After (CLAHE — visual reference only)
+![Before After](../output/reports/stage3_preprocessing/before_after_comparison.png)
 
-### Pixel Intensity Histograms (Post-Preprocessing)
-![Pixel Histograms](output/reports/pixel_histograms.png)
+### Pixel Intensity Histograms
+![Pixel Histograms](../output/reports/stage3_preprocessing/pixel_histograms.png)
 
 ### Brightness Distribution per Class
-![Brightness Distribution](output/reports/brightness_distribution.png)
+![Brightness Distribution](../output/reports/stage2_eda/brightness_distribution.png)
 
 ---
 
@@ -110,8 +113,8 @@ The higher std (0.206) compared to raw confirms **CLAHE successfully enhanced co
 
 | # | Finding | Recommendation |
 |---|---------|----------------|
-| 1 | Disgust severely underrepresented (436 vs 7,215 Happy) | Use augmentation/class weighting in Phase 2 |
-| 2 | Surprise is the brightest class (avg 158.6) | Monitor brightness-based normalization effects |
-| 3 | Fear & Disgust have highest contrast (~59 std) | Most textured/expressive faces — good for training |
-| 4 | Zero corrupt or unusable images | Dataset is clean — no filtering needed |
-| 5 | Stratified batch ensures fair class evaluation | Good baseline for Phase 1 |
+| 1 | Disgust severely underrepresented (436 vs 7,215 Happy) | Augmentation ×4 + class weights ✅ |
+| 2 | Surprise is the brightest class (avg 158.6) | Monitor brightness normalization effects |
+| 3 | Fear & Disgust have highest contrast (~59 std) | Most textured faces — good discriminative features |
+| 4 | Zero corrupt or unusable images | Dataset is clean — no filtering needed ✅ |
+| 5 | Stratified batch ensures fair class evaluation | Good baseline for analysis ✅ |

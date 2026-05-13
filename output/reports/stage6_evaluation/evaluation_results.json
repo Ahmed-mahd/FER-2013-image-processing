@@ -1,0 +1,14 @@
+{
+  "CNN_Scratch": {
+    "accuracy": 0.662301,
+    "precision": 0.68055,
+    "recall": 0.588747,
+    "f1_score": 0.597728
+  },
+  "EfficientNetB0": {
+    "accuracy": 0.63221,
+    "precision": 0.626815,
+    "recall": 0.604058,
+    "f1_score": 0.608001
+  }
+}

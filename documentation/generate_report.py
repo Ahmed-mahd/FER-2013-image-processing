@@ -137,7 +137,9 @@ html = f"""<!DOCTYPE html>
   <div class="subtitle">Deep Learning Pipeline: CNN from Scratch vs EfficientNetB0 Transfer Learning</div>
   <div class="meta">
     Dataset: FER2013 (Kaggle) &nbsp;|&nbsp; 7 Emotion Classes &nbsp;|&nbsp; 35,887 Images<br/>
-    Prepared by: Ahmed Mahdi &amp; Team &nbsp;|&nbsp; Date: 2026-05-13
+    Prepared by:<br/>
+    <b>Ahmed Mahmoud</b> (230104472) &nbsp;|&nbsp; <b>Mohamed Ahmed</b> (230101143) &nbsp;|&nbsp; <b>Mohamed Ashraf</b> (230105239)<br/>
+    Date: 2026-05-13
   </div>
 </div>
 
@@ -380,7 +382,7 @@ from either model. The app applies the exact same preprocessing pipeline used du
 
 <hr class="section-divider"/>
 <p style="text-align:center;color:#888;font-size:11px;margin-top:20px;">
-  FER2013 Project Report &nbsp;|&nbsp; Generated 2026-05-13 &nbsp;|&nbsp; Ahmed Mahdi &amp; Team
+  FER2013 Project Report &nbsp;|&nbsp; Generated 2026-05-13 &nbsp;|&nbsp; Ahmed Mahmoud, Mohamed Ahmed, Mohamed Ashraf
 </p>
 
 </body>

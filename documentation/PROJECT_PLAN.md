@@ -1,7 +1,7 @@
 # FER2013 — Project Plan
 
 > Deep Learning pipeline for Facial Expression Recognition using FER2013 dataset.
-> **Team:** Ahmed Mahdi & teammate | **Course:** AI/ML Lab | **Last updated: 2026-05-13**
+> **Team:** Ahmed Mahmoud (230104472), Mohamed Ahmed (230101143), Mohamed Ashraf (230105239) | **Course:** AI/ML Lab | **Last updated: 2026-05-13**
 
 ---
 

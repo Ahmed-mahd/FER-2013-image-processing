@@ -128,7 +128,7 @@ def plot_training_curves(
         ax.legend(facecolor="#1A1A2E", labelcolor="white", fontsize=9)
 
     fig.suptitle(
-        "MobileNetV2 Transfer Learning — Training Curves (Phase 1 + Phase 2)",
+        "EfficientNetB0 Transfer Learning — Training Curves (Phase 1 + Phase 2)",
         color="white", fontsize=14, fontweight="bold",
     )
     plt.tight_layout()

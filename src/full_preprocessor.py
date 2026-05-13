@@ -9,7 +9,7 @@ Builds TWO complete data pipelines:
       Input  : 48x48 grayscale, [0, 1]
       Source : Keras ImageDataGenerator (unchanged)
 
-  Pipeline B  —  Transfer Learning (MobileNetV2)
+  Pipeline B  —  Transfer Learning (EfficientNetB0)
       Input  : 224x224 RGB, [-1, 1]
       Source : tf.data pipeline with parallel loading + GPU prefetch
                → eliminates the CPU bottleneck that caused 3-hour epochs
@@ -196,7 +196,7 @@ def build_scratch_pipeline(
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pipeline B — Transfer Learning  tf.data (FAST)
-# 224x224 RGB, MobileNetV2 preprocessing, GPU-side prefetch
+# 224x224 RGB, EfficientNetB0 preprocessing, GPU-side prefetch
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _collect_paths_and_labels(root: Path) -> tuple:
@@ -292,7 +292,7 @@ def build_tl_pipeline(
     seed:       int   = SEED,
 ) -> tuple:
     """
-    Build fast tf.data pipelines for MobileNetV2 transfer learning.
+    Build fast tf.data pipelines for EfficientNetB0 transfer learning.
 
     Uses parallel map + GPU prefetch instead of ImageDataGenerator,
     which keeps the GPU at ~90% utilization vs ~25% with the old approach.
@@ -327,7 +327,7 @@ def build_tl_pipeline(
     train_steps = math.ceil(len(train_paths) / batch_size)
     val_steps   = math.ceil(len(val_paths)   / batch_size)
 
-    print(f"\n  [Pipeline B — MobileNetV2  224x224 RGB  tf.data FAST]")
+    print(f"\n  [Pipeline B — EfficientNetB0  224x224 RGB  tf.data FAST]")
     print(f"    Train samples      : {len(train_paths):,}")
     print(f"    Validation samples : {len(val_paths):,}")
     print(f"    Test samples       : {len(test_paths):,}")

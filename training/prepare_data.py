@@ -8,7 +8,7 @@ What this script does:
   2. Computes class weights for use in model.fit()
   3. Builds and validates both data pipelines:
        Pipeline A — CNN scratch  (48x48 grayscale, normalized [0,1])
-       Pipeline B — MobileNetV2  (224x224 RGB, normalized [-1,1])
+       Pipeline B — EfficientNetB0  (224x224 RGB, normalized [-1,1])
   4. Verifies a sample batch from each pipeline
   5. Saves pipeline stats and augmentation summary to output/reports/
 
@@ -87,7 +87,7 @@ def plot_sample_batch(gen, name: str, out_dir: Path, n: int = 8):
     for i, ax in enumerate(axes):
         img = X[i, :, :, 0] if is_gray else X[i]
         # Un-normalise for display
-        if img.min() < 0:                    # MobileNet [-1,1] -> [0,1]
+        if img.min() < 0:                    # EfficientNetB0 preprocess_input [-1,1] -> rescale to [0,1]
             img = (img + 1.0) / 2.0
         ax.imshow(img, cmap="gray" if is_gray else None, vmin=0, vmax=1)
         label_idx = int(np.argmax(y[i]))
@@ -221,13 +221,13 @@ def main():
     plot_sample_batch(train_a, "CNN Scratch", OUT_DIR)
 
     # ── Step 5: Build Pipeline B (Transfer Learning) ──────────────────────────
-    step(5, "Building Pipeline B — MobileNetV2 (224x224 RGB)")
+    step(5, "Building Pipeline B — EfficientNetB0 (224x224 RGB)")
     train_b, val_b, test_b = build_tl_pipeline(
         batch_size=args.batch_size
     )
 
     stats_b = verify_batch(train_b, "Pipeline_B_train", OUT_DIR)
-    plot_sample_batch(train_b, "MobileNetV2", OUT_DIR)
+    plot_sample_batch(train_b, "EfficientNetB0", OUT_DIR)
 
     # ── Summary ───────────────────────────────────────────────────────────────
     elapsed = time.time() - t0
@@ -238,7 +238,7 @@ def main():
     print(f"\n  Pipeline A (CNN scratch 48x48 grayscale):")
     print(f"    Train  {train_a.samples:>6,} | Val {val_a.samples:>5,} | Test {test_a.samples:>5,}")
     print(f"    Pixel range: [{stats_a['pixel_min']:.2f}, {stats_a['pixel_max']:.2f}]")
-    print(f"\n  Pipeline B (MobileNetV2 224x224 RGB):")
+    print(f"\n  Pipeline B (EfficientNetB0 224x224 RGB):")
     print(f"    Train  {train_b.samples:>6,} | Val {val_b.samples:>5,} | Test {test_b.samples:>5,}")
     print(f"    Pixel range: [{stats_b['pixel_min']:.2f}, {stats_b['pixel_max']:.2f}]")
     print(f"\n  Class weights saved to: {weights_path}")
